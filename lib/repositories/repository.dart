@@ -9,6 +9,6 @@ class Repository {
 
   Future<List> fetchPosts() async {
     final response = await client.get(_url);
-    return jsonDecode(response.body) ;
+    return jsonDecode(response.body);
   }
 }

@@ -1,6 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:http_test/models/model.dart';
 import 'package:http_test/repositories/repository.dart';
 
 class Home extends StatelessWidget {
@@ -15,22 +14,28 @@ class Home extends StatelessWidget {
         height: double.infinity,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: FutureBuilder<String>(
+          child: FutureBuilder<List>(
               future: repository.fetchPosts(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  final List list = json.decode(snapshot.data!);
+                  final List<PostModel>? posts = [];
+                  snapshot.data?.forEach((element) {
+                    posts?.add(PostModel.fromJson(element));
+                  });
                   return ListView.builder(
-                      itemCount: list.length,
+                      itemCount: posts?.length,
                       itemBuilder: (context, index) {
-                        final Map<String, dynamic> data = list[index];
                         return Card(
                           child: ListTile(
-                            title: Text(data["title"]),
-                            subtitle: Text(data["body"]),
+                            title: Text(posts?[index].title ?? "N/A"),
+                            subtitle: Text(posts?[index].body ?? "N/A"),
                           ),
                         );
                       });
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text(snapshot.error.toString()),
+                  );
                 } else {
                   return const Center(
                     child: CircularProgressIndicator(),
